@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Упаковка для Пиццерии | Презентация ПриоТрейд</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* =====================================================
+           ИНСТРУКЦИЯ: БАЗОВЫЕ НАСТРОЙКИ
+           Здесь можно изменить цвета, шрифты, отступы
+        ===================================================== */
+        :root {
+            --primary: #FF6B35;
+            --primary-hover: #E55A2B;
+            --secondary: #FFA500;
+            --success: #2ECC71;
+            --text-dark: #2C3E50;
+            --text-light: #FFFFFF;
+            --text-secondary: #7F8C8D;
+            --bg-dark: #1a1a2e;
+            --bg-gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --bg-gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+            --space-xs: 8px;
+            --space-s: 13px;
+            --space-m: 21px;
+            --space-l: 34px;
+            --space-xl: 55px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* =====================================================
+           ИНСТРУКЦИЯ: КОНТЕЙНЕР ПРЕЗЕНТАЦИИ
+           Fullscreen слайды, навигация стрелками/свайпом
+        ===================================================== */
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Слайды */
+        .slide {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 10;
+        }
+
+        .slide.prev {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        /* =====================================================
+           ИНСТРУКЦИЯ: ТИПЫ СЛАЙДОВ
+           - slide-cover: Обложка (первый слайд)
+           - slide-content: Контентный слайд (текст + графика)
+           - slide-image: Слайд с большим изображением
+           - slide-cta: Призыв к действию (последний слайд)
+        ===================================================== */
+
+        /* Слайд-обложка */
+        .slide-cover {
+            background: var(--bg-gradient-1);
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .slide-cover h1 {
+            font-size: clamp(32px, 8vw, 72px);
+            font-weight: 900;
+            margin-bottom: var(--space-l);
+            line-height: 1.2;
+            text-shadow: 0px 4px 21px rgba(0,0,0,0.3);
+        }
+
+        .slide-cover .subtitle {
+            font-size: clamp(18px, 3vw, 28px);
+            margin-bottom: var(--space-xl);
+            opacity: 0.9;
+        }
+
+        .slide-cover .company-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: var(--space-xl);
+            opacity: 0.8;
+        }
+
+        /* Контентный слайд */
+        .slide-content {
+            background: var(--text-light);
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        .slide-content .content-wrapper {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            align-items: center;
+        }
+
+        .slide-content h2 {
+            font-size: clamp(28px, 5vw, 48px);
+            margin-bottom: var(--space-l);
+            color: var(--primary);
+        }
+
+        .slide-content p {
+            font-size: clamp(16px, 2vw, 20px);
+            line-height: 1.8;
+            margin-bottom: var(--space-m);
+            color: var(--text-dark);
+        }
+
+        .slide-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .slide-content li {
+            font-size: clamp(16px, 2vw, 20px);
+            padding: var(--space-s) 0;
+            padding-left: var(--space-l);
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .slide-content li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        /* Визуальный блок (иллюстрация/иконка) */
+        .visual-block {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(80px, 15vw, 200px);
+            opacity: 0.9;
+        }
+
+        /* Слайд с таблицей цен */
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--space-l);
+            background: white;
+            border-radius: 13px;
+            overflow: hidden;
+            box-shadow: 0px 8px 34px rgba(0,0,0,0.1);
+        }
+
+        .price-table th,
+        .price-table td {
+            padding: var(--space-m);
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .price-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: clamp(16px, 2vw, 20px);
+        }
+
+        .price-table td {
+            font-size: clamp(14px, 1.8vw, 18px);
+        }
+
+        .price-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .price-table .price-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: clamp(18px, 2.5vw, 24px);
+        }
+
+        /* Слайд с призывом к действию */
+        .slide-cta {
+            background: var(--bg-gradient-2);
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .slide-cta h2 {
+            font-size: clamp(32px, 6vw, 56px);
+            margin-bottom: var(--space-l);
+            color: white;
+        }
+
+        .slide-cta p {
+            font-size: clamp(18px, 3vw, 24px);
+            margin-bottom: var(--space-xl);
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: var(--space-l) var(--space-xl);
+            background: white;
+            color: var(--primary);
+            font-size: clamp(18px, 2.5vw, 24px);
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 13px;
+            transition: all 0.3s ease;
+            box-shadow: 0px 8px 21px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 13px 34px rgba(0,0,0,0.3);
+        }
+
+        .contact-info {
+            margin-top: var(--space-xl);
+            font-size: clamp(16px, 2vw, 20px);
+            opacity: 0.8;
+        }
+
+        /* =====================================================
+           ИНСТРУКЦИЯ: НАВИГАЦИЯ
+           Стрелки влево/вправо, точки-индикаторы, прогресс-бар
+        ===================================================== */
+
+        /* Стрелки навигации */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 13px rgba(0,0,0,0.2);
+        }
+
+        .nav-arrow:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-arrow-left {
+            left: var(--space-l);
+        }
+
+        .nav-arrow-right {
+            right: var(--space-l);
+        }
+
+        .nav-arrow.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Точки-индикаторы */
+        .slide-indicators {
+            position: fixed;
+            bottom: var(--space-l);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: var(--space-s);
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            width: 34px;
+            border-radius: 8px;
+        }
+
+        /* Прогресс-бар */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 100;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+
+        /* Номер слайда */
+        .slide-number {
+            position: fixed;
+            top: var(--space-l);
+            right: var(--space-l);
+            z-index: 100;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.3);
+            padding: var(--space-s) var(--space-m);
+            border-radius: 21px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* =====================================================
+           ИНСТРУКЦИЯ: АДАПТИВНОСТЬ (МОБИЛЬНЫЕ)
+        ===================================================== */
+        @media (max-width: 768px) {
+            .slide {
+                padding: var(--space-l);
+            }
+
+            .slide-content .content-wrapper {
+                grid-template-columns: 1fr;
+                gap: var(--space-l);
+            }
+
+            .visual-block {
+                order: -1;
+                font-size: 80px;
+            }
+
+            .nav-arrow {
+                width: 48px;
+                height: 48px;
+            }
+
+            .nav-arrow-left {
+                left: var(--space-m);
+            }
+
+            .nav-arrow-right {
+                right: var(--space-m);
+            }
+
+            .slide-indicators {
+                bottom: var(--space-m);
+            }
+
+            .slide-number {
+                top: var(--space-m);
+                right: var(--space-m);
+                font-size: 14px;
+            }
+
+            .price-table {
+                font-size: 14px;
+            }
+
+            .price-table th,
+            .price-table td {
+                padding: var(--space-s);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Прогресс-бар -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+    </div>
+
+    <!-- Номер слайда -->
+    <div class="slide-number" id="slideNumber">1 / 8</div>
+
+    <!-- Навигация стрелками -->
+    <div class="nav-arrow nav-arrow-left" id="navLeft" onclick="prevSlide()">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </div>
+
+    <div class="nav-arrow nav-arrow-right" id="navRight" onclick="nextSlide()">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+    </div>
+
+    <!-- Индикаторы слайдов -->
+    <div class="slide-indicators" id="indicators"></div>
+
+    <!-- Контейнер презентации -->
+    <div class="presentation-container">
+
+        <!-- =====================================================
+             СЛАЙД 1: ОБЛОЖКА
+        ===================================================== -->
+        <div class="slide slide-cover active" data-slide="1">
+            <h1>🍕 Упаковка для пиццерии</h1>
+            <p class="subtitle">Брендированная упаковка, которая привлекает клиентов и увеличивает продажи</p>
+            <div class="company-logo">ПриоТрейд</div>
+        </div>
+
+        <!-- =====================================================
+             СЛАЙД 2: ПРОБЛЕМА
+        ===================================================== -->
+        <div class="slide slide-content" data-slide="2">
+            <div class="content-wrapper">
+                <div>
+                    <h2>Почему упаковка важна?</h2>
+                    <p>В условиях высокой конкуренции упаковка — это не просто коробка. Это:</p>
+                    <ul>
+                        <li>Первое впечатление о вашей пиццерии</li>
+                        <li>Инструмент узнаваемости бренда</li>
+                        <li>Реклама, которая работает сама по себе</li>
+                        <li>Защита продукта в доставке</li>
+                    </ul>
+                    <p style="margin-top: var(--space-l); font-weight: 600; color: var(--primary);">
+                        Клиенты запоминают бренд по упаковке и возвращаются за повторными заказами.
+                    </p>
+                </div>
+                <div class="visual-block">📦</div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             СЛАЙД 3: РЕШЕНИЕ
+        ===================================================== -->
+        <div class="slide slide-content" data-slide="3">
+            <div class="content-wrapper">
+                <div class="visual-block">✨</div>
+                <div>
+                    <h2>Наше решение</h2>
+                    <p>Мы создаём брендированную упаковку под ключ:</p>
+                    <ul>
+                        <li>Дизайн с вашим логотипом и фирменными цветами</li>
+                        <li>Печать на картоне высокого качества</li>
+                        <li>Выбор размеров (25, 30, 33, 40 см)</li>
+                        <li>Тираж от 500 до 10 000+ коробок</li>
+                        <li>Доставка в ваш город</li>
+                    </ul>
+                    <p style="margin-top: var(--space-l);">
+                        <strong>Результат:</strong> ваша пиццерия выделяется среди конкурентов, клиенты запоминают бренд и рекомендуют друзьям.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             СЛАЙД 4: ЧТО ВХОДИТ
+        ===================================================== -->
+        <div class="slide slide-content" data-slide="4">
+            <div class="content-wrapper" style="grid-template-columns: 1fr;">
+                <div>
+                    <h2>Что входит в услугу?</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-l); margin-top: var(--space-l);">
+                        <div>
+                            <h3 style="color: var(--primary); margin-bottom: var(--space-m);">Коробки для пиццы</h3>
+                            <ul>
+                                <li>Размеры: 25, 30, 33, 40 см</li>
+                                <li>Материал: гофрокартон / белый картон</li>
+                                <li>Печать: полноцветная (CMYK)</li>
+                                <li>Опции: ламинация, тиснение</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--primary); margin-bottom: var(--space-m);">Дополнительно</h3>
+                            <ul>
+                                <li>Дизайн меню и листовок</li>
+                                <li>Брендирование пакетов</li>
+                                <li>Фирменные салфетки и наклейки</li>
+                                <li>Визитки и флаеры</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             СЛАЙД 5: ПРИМЕРЫ РАБОТ
+        ===================================================== -->
+        <div class="slide slide-content" data-slide="5">
+            <div class="content-wrapper">
+                <div>
+                    <h2>Примеры наших работ</h2>
+                    <p>Мы создали упаковку для 50+ пиццерий по всей России:</p>
+                    <ul>
+                        <li><strong>Pizzeria "Bella"</strong> — увеличили узнаваемость бренда на 40%</li>
+                        <li><strong>Доставка "Вкусно!"</strong> — выросли повторные заказы на 25%</li>
+                        <li><strong>Кафе "IL Forno"</strong> — получили 100+ отзывов о красивой упаковке</li>
+                    </ul>
+                    <p style="margin-top: var(--space-l); font-style: italic; color: var(--text-secondary);">
+                        "Коробки от ПриоТрейд стали визитной карточкой нашей пиццерии. Клиенты узнают нас по упаковке!" — Владелец пиццерии "Bella"
+                    </p>
+                </div>
+                <div class="visual-block">🏆</div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             СЛАЙД 6: ЦЕНЫ
+        ===================================================== -->
+        <div class="slide slide-content" data-slide="6">
+            <div class="content-wrapper" style="grid-template-columns: 1fr;">
+                <div>
+                    <h2>Стоимость упаковки</h2>
+                    <p style="margin-bottom: var(--space-l);">Цена зависит от размера, тиража и сложности печати:</p>
+
+                    <table class="price-table">
+                        <thead>
+                            <tr>
+                                <th>Размер</th>
+                                <th>Тираж 500 шт</th>
+                                <th>Тираж 1000 шт</th>
+                                <th>Тираж 3000 шт</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>25 см</strong></td>
+                                <td class="price-value">18 ₽/шт</td>
+                                <td class="price-value">15 ₽/шт</td>
+                                <td class="price-value">12 ₽/шт</td>
+                            </tr>
+                            <tr>
+                                <td><strong>30 см</strong></td>
+                                <td class="price-value">22 ₽/шт</td>
+                                <td class="price-value">18 ₽/шт</td>
+                                <td class="price-value">15 ₽/шт</td>
+                            </tr>
+                            <tr>
+                                <td><strong>33 см</strong></td>
+                                <td class="price-value">26 ₽/шт</td>
+                                <td class="price-value">22 ₽/шт</td>
+                                <td class="price-value">18 ₽/шт</td>
+                            </tr>
+                            <tr>
+                                <td><strong>40 см</strong></td>
+                                <td class="price-value">32 ₽/шт</td>
+                                <td class="price-value">28 ₽/шт</td>
+                                <td class="price-value">24 ₽/шт</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin-top: var(--space-l); text-align: center; color: var(--text-secondary);">
+                        <strong>Дизайн:</strong> от 5 000 ₽ (или бесплатно при заказе от 3000 шт)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             СЛАЙД 7: ПРОЦЕСС РАБОТЫ
+        ===================================================== -->
+        <div class="slide slide-content" data-slide="7">
+            <div class="content-wrapper" style="grid-template-columns: 1fr;">
+                <div>
+                    <h2>Как мы работаем?</h2>
+                    <p style="margin-bottom: var(--space-l);">Простой процесс в 5 шагов:</p>
+
+                    <div style="display: grid; gap: var(--space-m);">
+                        <div style="display: flex; gap: var(--space-m); align-items: flex-start;">
+                            <div style="background: var(--primary); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px; flex-shrink: 0;">1</div>
+                            <div>
+                                <strong style="font-size: 20px;">Заявка</strong>
+                                <p style="margin-top: 4px; color: var(--text-secondary);">Вы оставляете заявку — мы связываемся с вами в течение 1 часа</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: var(--space-m); align-items: flex-start;">
+                            <div style="background: var(--primary); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px; flex-shrink: 0;">2</div>
+                            <div>
+                                <strong style="font-size: 20px;">Дизайн</strong>
+                                <p style="margin-top: 4px; color: var(--text-secondary);">Наш дизайнер создаёт макет упаковки с вашим логотипом (2-3 дня)</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: var(--space-m); align-items: flex-start;">
+                            <div style="background: var(--primary); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px; flex-shrink: 0;">3</div>
+                            <div>
+                                <strong style="font-size: 20px;">Согласование</strong>
+                                <p style="margin-top: 4px; color: var(--text-secondary);">Вы утверждаете макет — вносим правки (1-2 раунда бесплатно)</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: var(--space-m); align-items: flex-start;">
+                            <div style="background: var(--primary); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px; flex-shrink: 0;">4</div>
+                            <div>
+                                <strong style="font-size: 20px;">Производство</strong>
+                                <p style="margin-top: 4px; color: var(--text-secondary);">Печатаем тираж на профессиональном оборудовании (7-14 дней)</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: var(--space-m); align-items: flex-start;">
+                            <div style="background: var(--success); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px; flex-shrink: 0;">5</div>
+                            <div>
+                                <strong style="font-size: 20px;">Доставка</strong>
+                                <p style="margin-top: 4px; color: var(--text-secondary);">Отправляем упаковку в ваш город — вы получаете готовый тираж</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             СЛАЙД 8: ПРИЗЫВ К ДЕЙСТВИЮ
+        ===================================================== -->
+        <div class="slide slide-cta" data-slide="8">
+            <h2>Готовы выделиться среди конкурентов?</h2>
+            <p>Закажите брендированную упаковку для вашей пиццерии прямо сейчас!</p>
+
+            <a href="https://rodinx-ai.github.io/calculator-branding-kp/" class="cta-button" target="_blank">
+                📦 Рассчитать стоимость
+            </a>
+
+            <div class="contact-info">
+                <p><strong>ПриоТрейд</strong></p>
+                <p>📞 +7 (900) 123-45-67</p>
+                <p>📧 info@priotrade.ru</p>
+                <p>📍 г. Обнинск, Калужская область</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* =====================================================
+           ИНСТРУКЦИЯ: ЛОГИКА НАВИГАЦИИ
+           - Стрелки клавиатуры (влево/вправо)
+           - Клик по стрелкам на экране
+           - Свайп на мобильных
+           - Клик по индикаторам (точкам)
+        ===================================================== */
+
+        let currentSlide = 1;
+        const totalSlides = 8;
+
+        // Инициализация индикаторов
+        function initIndicators() {
+            const indicatorsContainer = document.getElementById('indicators');
+            for (let i = 1; i <= totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = i === 1 ? 'indicator active' : 'indicator';
+                indicator.setAttribute('data-slide', i);
+                indicator.onclick = () => goToSlide(i);
+                indicatorsContainer.appendChild(indicator);
+            }
+        }
+
+        // Переход к конкретному слайду
+        function goToSlide(slideNumber) {
+            if (slideNumber < 1 || slideNumber > totalSlides) return;
+
+            // Убираем active со всех слайдов
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active', 'prev');
+            });
+
+            // Добавляем active к нужному слайду
+            const targetSlide = document.querySelector(`[data-slide="${slideNumber}"]`);
+            targetSlide.classList.add('active');
+
+            // Добавляем prev к предыдущему слайду (для анимации)
+            if (slideNumber > currentSlide) {
+                const prevSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+                prevSlide.classList.add('prev');
+            }
+
+            currentSlide = slideNumber;
+
+            // Обновляем индикаторы
+            document.querySelectorAll('.indicator').forEach((indicator, index) => {
+                indicator.classList.toggle('active', index + 1 === currentSlide);
+            });
+
+            // Обновляем прогресс-бар
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Обновляем номер слайда
+            document.getElementById('slideNumber').textContent = `${currentSlide} / ${totalSlides}`;
+
+            // Обновляем стрелки (отключаем на первом/последнем слайде)
+            document.getElementById('navLeft').classList.toggle('disabled', currentSlide === 1);
+            document.getElementById('navRight').classList.toggle('disabled', currentSlide === totalSlides);
+        }
+
+        // Следующий слайд
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        // Предыдущий слайд
+        function prevSlide() {
+            if (currentSlide > 1) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        // Навигация клавиатурой
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Свайп на мобильных
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                nextSlide(); // Свайп влево
+            }
+            if (touchEndX > touchStartX + 50) {
+                prevSlide(); // Свайп вправо
+            }
+        }
+
+        // Инициализация
+        initIndicators();
+        goToSlide(1);
+    </script>
+
+</body>
+</html>
